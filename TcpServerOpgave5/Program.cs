@@ -46,19 +46,21 @@ namespace TcpServerOpgave5
             using (StreamWriter writer = new StreamWriter(socket.GetStream()))
             {
                 writer.AutoFlush = true;
-                String kommando = reader.ReadLine();
-                String fp = reader.ReadLine();
+                Console.WriteLine("Kommando: ");
+                string kommando = reader.ReadLine();
+                Console.WriteLine("Data: ");
+                string fp = reader.ReadLine();
 
                 switch (kommando)
                 {
                     case "HentAlle":
-                        String json = JsonSerializer.Serialize(footballPlayers);
+                        string json = JsonSerializer.Serialize(footballPlayers);
                         writer.WriteLine(json);
                         break;
                     case "Hent":
-                        int id = Int32.Parse(fp);
+                        int id = int.Parse(fp);
                         FootballPlayer footballplayer = footballPlayers.Find(f => f.Id == id);
-                        String jsonFp = JsonSerializer.Serialize(footballplayer);
+                        string jsonFp = JsonSerializer.Serialize(footballplayer);
                         writer.WriteLine(jsonFp);
                         break;
                     case "Gem":

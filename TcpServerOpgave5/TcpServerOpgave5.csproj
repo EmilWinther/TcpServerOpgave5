@@ -7,7 +7,7 @@
 
   <ItemGroup>
     <Reference Include="FootBallLib">
-      <HintPath>..\..\Opgave1CsharpOgUnnittest\FootBallLib\bin\Debug\net5.0\FootBallLib.dll</HintPath>
+      <HintPath>..\..\..\..\Documents\Github clone\FPLib\FootBallLib\bin\Debug\net5.0\FootBallLib.dll</HintPath>
     </Reference>
   </ItemGroup>
 
