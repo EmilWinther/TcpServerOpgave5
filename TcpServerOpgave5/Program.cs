@@ -22,7 +22,6 @@ namespace TcpServerOpgave5
         };
         static void Main(string[] args)
         {
-            Console.WriteLine("Server");
             TcpListener listener = new TcpListener(IPAddress.Loopback, 2121);
             listener.Start();
             //maybe while loop here 
@@ -32,8 +31,10 @@ namespace TcpServerOpgave5
                 Task.Run(
                     () =>
                     {
-                        TcpClient tmpSocket = socket;
-                        DoClient(tmpSocket);
+                        Console.WriteLine("Server ready");
+                        TcpClient sockets = socket;
+                        Console.WriteLine("Incoming client");
+                        DoClient(sockets);
                     }
                 );
             }
@@ -53,6 +54,16 @@ namespace TcpServerOpgave5
                     case "HentAlle":
                         String json = JsonSerializer.Serialize(footballPlayers);
                         writer.WriteLine(json);
+                        break;
+                    case "Hent":
+                        int id = Int32.Parse(fp);
+                        FootballPlayer footballplayer = footballPlayers.Find(f => f.Id == id);
+                        String jsonFp = JsonSerializer.Serialize(footballplayer);
+                        writer.WriteLine(jsonFp);
+                        break;
+                    case "Gem":
+                        FootballPlayer newFP = JsonSerializer.Deserialize<FootballPlayer>(fp);
+                        footballPlayers.Add(newFP);
                         break;
                     default:
                         writer.WriteLine("not allowed");
