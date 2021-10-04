@@ -1,14 +1,25 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Net.Sockets;
 using System.Text.Json;
+using System.Text.Json.Serialization;
+using System.Threading.Tasks;
 using FootBallLib;
 
 namespace TcpServerOpgave5
 {
     class Program
     {
+        private static readonly List<FootballPlayer> footballPlayers = new List<FootballPlayer>()
+        {
+            new FootballPlayer(1, "Lionel Messi", 12.2, 1),
+            new FootballPlayer(2, "Cristiano Ronaldo", 13.45, 2),
+            new FootballPlayer(3, "Mohamed Salah", 17.3, 3),
+            new FootballPlayer(4, "Robert Lewandowski", 19.2, 4)
+
+        };
         static void Main(string[] args)
         {
             Console.WriteLine("Server");
@@ -17,24 +28,39 @@ namespace TcpServerOpgave5
             //maybe while loop here 
             while (true)
             {
-                Console.WriteLine("Server is ready on port 2121");
                 TcpClient socket = listener.AcceptTcpClient();
-                Console.WriteLine("Incoming client");
-                DoClient(socket);
+                Task.Run(
+                    () =>
+                    {
+                        TcpClient tmpSocket = socket;
+                        DoClient(tmpSocket);
+                    }
+                );
             }
         }
+
         private static void DoClient(TcpClient socket)
         {
-            NetworkStream ns = socket.GetStream();
-            StreamReader reader = new StreamReader(ns);
-            StreamWriter writer = new StreamWriter(ns);
-            string message = reader.ReadLine();
-            message = Console.ReadLine();
-            FootballPlayer fromJson = JsonSerializer.Deserialize<FootballPlayer>(message);
-            Console.WriteLine("Football player: " + message);
-            writer.Write("Football player received");
-            writer.Flush();
-            socket.Close();
+            using (StreamReader reader = new StreamReader(socket.GetStream()))
+            using (StreamWriter writer = new StreamWriter(socket.GetStream()))
+            {
+                writer.AutoFlush = true;
+                String kommando = reader.ReadLine();
+                String fp = reader.ReadLine();
+
+                switch (kommando)
+                {
+                    case "HentAlle":
+                        String json = JsonSerializer.Serialize(footballPlayers);
+                        writer.WriteLine(json);
+                        break;
+                    default:
+                        writer.WriteLine("not allowed");
+                        break;
+                }
+            }
+
+            socket?.Close();
         }
     }
 }
